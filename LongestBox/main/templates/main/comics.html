@@ -1,0 +1,45 @@
+{%extends 'main/base.html' %}
+{% load static %}
+
+
+{% block title%}Comic name{% endblock title%}
+
+{% block content%}
+
+<p><a href="/newcomic"><img src="{%static 'img/Plus.png'%}" width="50" height="50"</a></p></a>
+{% for comic in comics %}
+
+<table >
+        <tr>
+                <td>
+                        <img src="{{ comic.image.url }}" alt="Issue Cover" width="50">
+                </td>
+
+                <td>
+                        <p>{{comic.publisher}}</p>
+                </td>
+                <td>
+                        <p>{{comic.name}}</p>
+                </td>
+                <td>
+                        <p>{{comic.number}}</p>
+                </td>
+                <td>
+                        <p>{{comic.variant}}</p>
+                </td>
+                <td>
+                        <p>{{comic.condition}}</p>
+                </td>
+                <td>
+                        <p>{{comic.date}}</p>
+                </td>
+                <td>
+                        <p>{{comic.owned}}</p>
+                </td>
+        </tr>
+</table>
+{% endfor%}
+<input type="button" class="btn btn-warning" value="Back" onclick="history.back()">
+
+{% endblock content %}
+

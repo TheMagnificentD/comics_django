@@ -1,0 +1,18 @@
+{%extends 'main/base.html' %}
+{% load static %}
+
+
+{% block title%}Confirm Registration{% endblock title%}
+
+{% block content%}
+<h1>Here you it will say welcome (username) please check your email to confirm registration</h1>
+
+<!-- {% for user in username %}
+    {user.username}
+{% endfor %} -->
+<form action="/login">
+    <button type="submit">Log in</button>
+</form>
+
+{% endblock content %}
+
