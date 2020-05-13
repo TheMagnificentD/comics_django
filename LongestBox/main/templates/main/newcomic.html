@@ -3,8 +3,8 @@
 {% block title%}New Comic{% endblock title%}
 
 {% block content %}
-<h1>Create a new box</h1>
-<form method="POST" action="/newcomic/" enctype="multipart/form-data">
+<h1>Add a new issue to the collection</h1>
+<form method="POST" action="" enctype="multipart/form-data">
         {% csrf_token %}
         {{form.as_p}}
         <button type="submit" name="save">Create New Issue</button>
@@ -12,7 +12,6 @@
 </form>
 
 <!-- Have to go back 2 pages because of the image save -->
-
 <button onclick="goBack()">Back</button>
 <script>
 function goBack() {
