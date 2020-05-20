@@ -48,6 +48,7 @@ def boxes(response):
 
 @login_required
 def new_comic(response, id):
+
     if response.method == "POST":
         form = CreateNewComic(response.POST, response.FILES, initial={"box": id})
 
@@ -74,7 +75,10 @@ def new_comic(response, id):
                 sImg=m,
             )
             return HttpResponseRedirect("/comics/%s" % int(b.pk))
+        else:
+            return render(response, "main/404.html", {})
     else:
+
         url = response.get_raw_uri()
         box_id = int(url.split("/")[4])
         form = CreateNewComic(initial={"box": box_id})
