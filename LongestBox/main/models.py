@@ -8,7 +8,7 @@ class Box(models.Model):
     name = models.CharField(max_length=200)
     sImg = models.ImageField(upload_to="boxes")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    
+
     def __str__(self):
         return self.name  # pylint: disable=no-member
 
@@ -41,7 +41,7 @@ class Comic(models.Model):
     def is_upperclass(self):
         return self.publisher in {self.MARVEL, self.DC_COMICS}
 
-    box = models.ForeignKey(Box, related_name ='comics', on_delete=models.CASCADE)
+    box = models.ForeignKey(Box, related_name="comics", on_delete=models.CASCADE)
     name = models.CharField("Title", max_length=120)
     sImg = models.ImageField("Image", upload_to="comics/")
     number = models.PositiveSmallIntegerField()

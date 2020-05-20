@@ -9,7 +9,6 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 
-
 # Create your views here.
 
 
@@ -25,9 +24,9 @@ def new_box(response):
         if form.is_valid():
             n = form.cleaned_data["name"]
             m = form.cleaned_data["sImg"]
-        
+
             response.user.box_set.create(name=n, sImg=m)
-            return HttpResponseRedirect(reverse('boxes'))
+            return HttpResponseRedirect(reverse("boxes"))
 
     else:
         print("Its not Valid")
@@ -50,7 +49,7 @@ def boxes(response):
 @login_required
 def new_comic(response, id):
     if response.method == "POST":
-        form = CreateNewComic(response.POST, response.FILES, initial={'box': id})
+        form = CreateNewComic(response.POST, response.FILES, initial={"box": id})
 
         if form.is_valid():
             b = form.cleaned_data["box"]
@@ -62,15 +61,24 @@ def new_comic(response, id):
             c = form.cleaned_data["condition"]
             o = form.cleaned_data["owned"]
             m = form.cleaned_data["sImg"]
-            
-            response.user.comic_set.create(box=b, publisher=p, name=n,
-            variant=v, number=num, date=d, condition=c, owned=o, sImg=m)
-            return HttpResponseRedirect('/comics/%s' % int(b.pk))
+
+            response.user.comic_set.create(
+                box=b,
+                publisher=p,
+                name=n,
+                variant=v,
+                number=num,
+                date=d,
+                condition=c,
+                owned=o,
+                sImg=m,
+            )
+            return HttpResponseRedirect("/comics/%s" % int(b.pk))
     else:
         url = response.get_raw_uri()
-        box_id = int(url.split('/')[4])
-        form = CreateNewComic(initial={'box': box_id})
-        form.fields['box'].widget = HiddenInput()
+        box_id = int(url.split("/")[4])
+        form = CreateNewComic(initial={"box": box_id})
+        form.fields["box"].widget = HiddenInput()
         return render(response, "main/newcomic.html", {"form": form})
 
 
