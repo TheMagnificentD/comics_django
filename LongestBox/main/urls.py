@@ -13,6 +13,8 @@ urlpatterns = [
     path("confirm_registration/", rv.conf_registration, name="confirm registration"),
     path("boxes/", views.boxes, name="boxes"),
     path("newbox/", views.new_box, name="new box"),
+    path("deletebox/<int:id>", views.delete_box, name="delete box"),
+    path("editbox/<int:id>", views.edit_box, name="edit box"),
     path("comics/<int:id>", views.comics, name="comics"),
     path("box/<int:id>/newcomic/", views.new_comic, name="new comic"),
 ]

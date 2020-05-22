@@ -1,8 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.forms import HiddenInput
 from django.http import HttpResponse
 from .models import Box, Comic
-from .forms import CreateNewBox, CreateNewComic
+from .forms import CreateNewBox, EditBox, CreateNewComic
 from django.contrib.auth.decorators import login_required
 
 from django.http import HttpResponseRedirect
@@ -44,6 +44,32 @@ def boxes(response):
             all_boxes.append({"id": box.id, "name": box.name, "image": box.sImg})
 
     return render(response, "main/boxes.html", {"boxes": all_boxes})
+
+
+@login_required
+def edit_box(response, id):
+    box = Box.objects.get(id=id)  # pylint: disable=no-member
+    if response.method == "POST":
+        form = EditBox(response.POST, response.FILES)
+        if form.is_valid():
+            n = form.cleaned_data["name"]
+            m = form.cleaned_data["sImg"]
+            box.name = n
+            box.sImg = m
+            box.save()
+            return HttpResponseRedirect(reverse("boxes"))
+
+    else:
+        form = CreateNewBox(instance=box)
+
+    return render(response, "main/editbox.html", {"form": form, "box": box})
+
+
+@login_required
+def delete_box(response, id):
+    box = Box.objects.get(id=id)  # pylint: disable=no-member
+    box.delete()
+    return HttpResponseRedirect(reverse("boxes"))
 
 
 @login_required
@@ -107,8 +133,3 @@ def comics(response, id):
                 }
             )
     return render(response, "main/comics.html", {"comics": all_comics, "box": box.pk})
-
-    # collection = Box.objects.get(id=id)# pylint: disable=no-member
-    # book = collection.comic_set.get(id=id)
-    # return HttpResponse("<h1>%s</h1><br></br><p>%s" %(collection.name, book.name))
-    # return render(response,'main/comics.html',{"box":collection, "comic":book})

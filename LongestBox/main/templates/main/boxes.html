@@ -9,14 +9,15 @@
 
 <p>See all your boxes here</p>
 
-<p><a href="/newbox"><img src="{%static 'img/Plus.png'%}" width="250" height="250"</a></p></a>
+<p><a href="/newbox"><img src="{%static 'img/Plus.png'%}" width="250" height="250" </a></p></a>
 
 <p>
         {% for box in boxes %}
-        <a href="/comics/{{box.id}}"><img src="{{ box.image.url }}" alt="Logo here" width="250" height="250"</a>
-                <figcaption> {{box.name}} </figcaption></a>
+        <a href="/comics/{{box.id}}"><img src="{{ box.image.url }}" alt="Logo here" width="250" height="250" </a>
+                <figcaption> {{box.name}} </figcaption>
+        </a>
+        <a href="/editbox/{{box.id}}">edit</a>| <a href="/deletebox/{{box.id}}">delete</a>
+
         {% endfor %}
 </p>
-
-
 {% endblock content %}
