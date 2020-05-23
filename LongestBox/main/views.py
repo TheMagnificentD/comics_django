@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.forms import HiddenInput
 from django.http import HttpResponse
 from .models import Box, Comic
-from .forms import CreateNewBox, EditBox, CreateNewComic
+from .forms import BoxForm, ComicForm
 from django.contrib.auth.decorators import login_required
 
 from django.http import HttpResponseRedirect
@@ -19,7 +19,7 @@ def home(response):
 @login_required
 def new_box(response):
     if response.method == "POST":
-        form = CreateNewBox(response.POST, response.FILES)
+        form = BoxForm(response.POST, response.FILES)
 
         if form.is_valid():
             n = form.cleaned_data["name"]
@@ -30,7 +30,7 @@ def new_box(response):
 
     else:
         print("Its not Valid")
-        form = CreateNewBox()
+        form = BoxForm()
 
     return render(response, "main/newbox.html", {"form": form})
 
@@ -50,7 +50,7 @@ def boxes(response):
 def edit_box(response, id):
     box = Box.objects.get(id=id)  # pylint: disable=no-member
     if response.method == "POST":
-        form = EditBox(response.POST, response.FILES)
+        form = BoxForm(response.POST, response.FILES)
         if form.is_valid():
             n = form.cleaned_data["name"]
             m = form.cleaned_data["sImg"]
@@ -60,7 +60,7 @@ def edit_box(response, id):
             return HttpResponseRedirect(reverse("boxes"))
 
     else:
-        form = CreateNewBox(instance=box)
+        form = BoxForm(instance=box)
 
     return render(response, "main/editbox.html", {"form": form, "box": box})
 
@@ -69,6 +69,7 @@ def edit_box(response, id):
 def delete_box(response, id):
     box = Box.objects.get(id=id)  # pylint: disable=no-member
     box.delete()
+    # messages.success(response, "Box has been deleted")
     return HttpResponseRedirect(reverse("boxes"))
 
 
@@ -76,7 +77,7 @@ def delete_box(response, id):
 def new_comic(response, id):
 
     if response.method == "POST":
-        form = CreateNewComic(response.POST, response.FILES, initial={"box": id})
+        form = ComicForm(response.POST, response.FILES, initial={"box": id})
 
         if form.is_valid():
             b = form.cleaned_data["box"]
@@ -107,7 +108,7 @@ def new_comic(response, id):
 
         url = response.get_raw_uri()
         box_id = int(url.split("/")[4])
-        form = CreateNewComic(initial={"box": box_id})
+        form = ComicForm(initial={"box": box_id})
         form.fields["box"].widget = HiddenInput()
         return render(response, "main/newcomic.html", {"form": form})
 

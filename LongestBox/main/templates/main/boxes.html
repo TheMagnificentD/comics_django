@@ -13,11 +13,17 @@
 
 <p>
         {% for box in boxes %}
-        <a href="/comics/{{box.id}}"><img src="{{ box.image.url }}" alt="Logo here" width="250" height="250" </a>
-                <figcaption> {{box.name}} </figcaption>
-        </a>
-        <a href="/editbox/{{box.id}}">edit</a>| <a href="/deletebox/{{box.id}}">delete</a>
-
-        {% endfor %}
+<table>
+        <tr>
+                <td>
+                        <a href="/comics/{{box.id}}"><img src="{{ box.image.url }}" alt="Logo here" width="250"
+                                        height="250" </a>
+                                <figcaption> {{box.name}} </figcaption>
+                        </a>
+                        <a href="/editbox/{{box.id}}">edit</a> | <a href="/deletebox/{{box.id}}">delete</a>
+                </td>
+        </tr>
+</table>
+{% endfor %}
 </p>
 {% endblock content %}
