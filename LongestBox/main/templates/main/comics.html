@@ -36,6 +36,9 @@
                 <td>
                         <p>{{comic.owned}}</p>
                 </td>
+                <td>
+                        <a href="/editcomic/{{comic.id}}">edit</a> | <a href="/deletecomic/{{comic.id}}">delete</a>
+                </td>
         </tr>
 </table>
 {% endfor%}

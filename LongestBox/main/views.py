@@ -17,6 +17,17 @@ def home(response):
 
 
 @login_required
+def boxes(response):
+    boxes = Box.objects.all()  # pylint: disable=no-member
+    all_boxes = []
+    for box in boxes:
+        if box.user_id == response.user.pk:
+            all_boxes.append({"id": box.id, "name": box.name, "image": box.sImg})
+
+    return render(response, "main/boxes.html", {"boxes": all_boxes})
+
+
+@login_required
 def new_box(response):
     if response.method == "POST":
         form = BoxForm(response.POST, response.FILES)
@@ -36,21 +47,10 @@ def new_box(response):
 
 
 @login_required
-def boxes(response):
-    boxes = Box.objects.all()  # pylint: disable=no-member
-    all_boxes = []
-    for box in boxes:
-        if box.user_id == response.user.pk:
-            all_boxes.append({"id": box.id, "name": box.name, "image": box.sImg})
-
-    return render(response, "main/boxes.html", {"boxes": all_boxes})
-
-
-@login_required
 def edit_box(response, id):
     box = Box.objects.get(id=id)  # pylint: disable=no-member
     if response.method == "POST":
-        form = BoxForm(response.POST, response.FILES)
+        form = BoxForm(response.POST, response.FILES, instance=box)
         if form.is_valid():
             n = form.cleaned_data["name"]
             m = form.cleaned_data["sImg"]
@@ -71,6 +71,29 @@ def delete_box(response, id):
     box.delete()
     # messages.success(response, "Box has been deleted")
     return HttpResponseRedirect(reverse("boxes"))
+
+
+@login_required
+def comics(response, id):
+    box = Box.objects.get(id=id)  # pylint: disable=no-member
+    comics = box.comics.all()
+    all_comics = []
+    for comic in comics:
+        if comic.user_id == response.user.pk:
+            all_comics.append(
+                {
+                    "image": comic.sImg,
+                    "publisher": comic.publisher,
+                    "id": comic.id,
+                    "name": comic.name,
+                    "number": comic.number,
+                    "variant": comic.variant,
+                    "condition": comic.condition,
+                    "date": comic.date,
+                    "owned": comic.owned,
+                }
+            )
+    return render(response, "main/comics.html", {"comics": all_comics, "box": box.pk})
 
 
 @login_required
@@ -113,24 +136,36 @@ def new_comic(response, id):
         return render(response, "main/newcomic.html", {"form": form})
 
 
-@login_required
-def comics(response, id):
-    box = Box.objects.get(id=id)  # pylint: disable=no-member
-    comics = box.comics.all()
-    all_comics = []
-    for comic in comics:
-        if comic.user_id == response.user.pk:
-            all_comics.append(
-                {
-                    "image": comic.sImg,
-                    "publisher": comic.publisher,
-                    "id": comic.id,
-                    "name": comic.name,
-                    "number": comic.number,
-                    "variant": comic.variant,
-                    "condition": comic.condition,
-                    "date": comic.date,
-                    "owned": comic.owned,
-                }
-            )
-    return render(response, "main/comics.html", {"comics": all_comics, "box": box.pk})
+def edit_comic(response, id):
+    comic = Comic.objects.get(id=id)  # pylint: disable=no-member
+
+    if response.method == "POST":
+        form = ComicForm(response.POST, response.FILES, instance=comic)
+
+        if form.is_valid():
+            b = form.cleaned_data["box"]
+            p = form.cleaned_data["publisher"]
+            n = form.cleaned_data["name"]
+            num = form.cleaned_data["number"]
+            v = form.cleaned_data["variant"]
+            d = form.cleaned_data["date"]
+            c = form.cleaned_data["condition"]
+            o = form.cleaned_data["owned"]
+            m = form.cleaned_data["sImg"]
+
+            comic.box = b
+            comic.publisher = p
+            comic.name = n
+            comic.number = num
+            comic.variant = v
+            comic.date = d
+            comic.condition = c
+            comic.owned = o
+            comic.sImg = m
+            comic.save()
+            return HttpResponseRedirect("/comics/%s" % int(b.pk))
+
+    else:
+        form = ComicForm(instance=comic)
+
+    return render(response, "main/editcomic.html", {"form": form, "comic": comic})
