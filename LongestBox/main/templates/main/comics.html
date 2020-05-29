@@ -5,8 +5,8 @@
 {% block title%}Comic name{% endblock title%}
 
 {% block content%}
-
-<p><a href="/box/{{box}}/newcomic"><img src="{%static 'img/Plus.png'%}" width="50" height="50" </a></p></a>
+<h2>{{box.name}}</h2>
+<p><a href="/box/{{box.id}}/newcomic"><img src="{%static 'img/Plus.png'%}" width="50" height="50" </a></p></a>
 {% for comic in comics %}
 
 <table>

@@ -93,12 +93,11 @@ def comics(response, id):
                     "owned": comic.owned,
                 }
             )
-    return render(response, "main/comics.html", {"comics": all_comics, "box": box.pk})
+    return render(response, "main/comics.html", {"comics": all_comics, "box": box})
 
 
 @login_required
 def new_comic(response, id):
-
     if response.method == "POST":
         form = ComicForm(response.POST, response.FILES, initial={"box": id})
 
@@ -169,3 +168,12 @@ def edit_comic(response, id):
         form = ComicForm(instance=comic)
 
     return render(response, "main/editcomic.html", {"form": form, "comic": comic})
+
+
+@login_required
+def delete_comic(response, id):
+    comic = Comic.objects.get(id=id)  # pylint: disable=no-member
+    b = comic.box
+    comic.delete()
+    # messages.success(response, "Box has been deleted")
+    return HttpResponseRedirect("/comics/%s" % int(b.pk))

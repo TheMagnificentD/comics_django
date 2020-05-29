@@ -18,6 +18,7 @@ urlpatterns = [
     path("comics/<int:id>", views.comics, name="comics"),
     path("box/<int:id>/newcomic/", views.new_comic, name="new comic"),
     path("editcomic/<int:id>", views.edit_comic, name="edit comic"),
+    path("deletecomic/<int:id>", views.delete_comic, name="delete box"),
 ]
 urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
