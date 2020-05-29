@@ -75,8 +75,6 @@ def delete_box(response, id):
 
 @login_required
 def comics(response, id):
-    import pdb
-
     box = Box.objects.get(id=id)  # pylint: disable=no-member
     comics = box.comics.all()
     all_comics = []
@@ -100,7 +98,6 @@ def comics(response, id):
 
 @login_required
 def new_comic(response, id):
-
     if response.method == "POST":
         form = ComicForm(response.POST, response.FILES, initial={"box": id})
 
