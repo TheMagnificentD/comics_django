@@ -1,11 +1,15 @@
-from django.db import models
+import uuid
 from django.contrib.auth.models import User
+from django.db import models
+from django.db.models.signals import pre_save
+from django.utils.text import slugify
 
 # Create your models here.
 
 
 class Box(models.Model):
     name = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
     sImg = models.ImageField(upload_to="boxes")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -95,6 +99,7 @@ class Comic(models.Model):
     )
     box = models.ForeignKey(Box, related_name="comics", on_delete=models.CASCADE)
     name = models.CharField("Title", max_length=120)
+    slug = models.SlugField(unique=True)
     sImg = models.ImageField("Image", upload_to="comics/")
     number = models.PositiveSmallIntegerField()
     date = models.DateField()
@@ -105,3 +110,40 @@ class Comic(models.Model):
     variant = models.CharField("Variant", max_length=5)
     owned = models.BooleanField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+def create_box_slug(instance, new_slug=None):
+    slug = slugify(instance.name)
+    try:
+        box = Box.objects.get(slug=slug)  # pylint: disable=no-member
+        if box:
+            slug = "%s-%s" % (slug, uuid.uuid4().hex[:8])
+    except:
+        pass
+    return slug
+
+
+def create_comic_slug(instance):
+    slug = slugify(instance.name)
+    try:
+        comic = Comic.objects.get(slug=slug)  # pylint: disable=no-member
+        if comic:
+            slug = "%s-%s" % (slug, uuid.uuid4().hex[:25])
+    except:
+        pass
+    return slug
+
+
+# The presave will always be called before the save
+def pre_save_receiver_box(sender, instance, *args, **kwargs):
+    if not instance.slug:
+        instance.slug = create_box_slug(instance)
+
+
+def pre_save_receiver_comic(sender, instance, *args, **kwargs):
+    if not instance.slug:
+        instance.slug = create_comic_slug(instance)
+
+
+pre_save.connect(pre_save_receiver_box, sender=Box)
+pre_save.connect(pre_save_receiver_comic, sender=Comic)

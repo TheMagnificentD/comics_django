@@ -9,16 +9,28 @@ from register import views as rv
 
 
 urlpatterns = [
+    # Home
     path("", views.home, name="home"),
+    # Register
     path("confirm_registration/", rv.conf_registration, name="confirm registration"),
+    # Boxes
     path("boxes/", views.boxes, name="boxes"),
-    path("newbox/", views.new_box, name="new box"),
-    path("editbox/<int:id>", views.edit_box, name="edit box"),
-    path("deletebox/<int:id>", views.delete_box, name="delete box"),
-    path("comics/<int:id>", views.comics, name="comics"),
-    path("box/<int:id>/newcomic/", views.new_comic, name="new comic"),
-    path("editcomic/<int:id>", views.edit_comic, name="edit comic"),
-    path("deletecomic/<int:id>", views.delete_comic, name="delete box"),
+    path("boxes/new-box/", views.new_box, name="new box"),
+    path("boxes/<str:slug>/edit-box", views.edit_box, name="edit box"),
+    path("boxes/<str:slug>/delete-box", views.delete_box, name="delete box"),
+    # Comics
+    path("boxes/<str:slug>/", views.comics, name="comics"),
+    path("boxes/<str:slug>/new-comic", views.new_comic, name="new comic"),
+    path(
+        "boxes/<str:slug>/<str:comic_slug>/edit-comic",
+        views.edit_comic,
+        name="edit comic",
+    ),
+    path(
+        "boxes/<str:slug>/<str:comic_slug>/delete-comic",
+        views.delete_comic,
+        name="delete comic",
+    ),
 ]
 urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

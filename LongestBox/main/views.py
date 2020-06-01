@@ -22,7 +22,9 @@ def boxes(response):
     all_boxes = []
     for box in boxes:
         if box.user_id == response.user.pk:
-            all_boxes.append({"id": box.id, "name": box.name, "image": box.sImg})
+            all_boxes.append(
+                {"id": box.id, "name": box.name, "slug": box.slug, "image": box.sImg}
+            )
 
     return render(response, "main/boxes.html", {"boxes": all_boxes})
 
@@ -47,8 +49,8 @@ def new_box(response):
 
 
 @login_required
-def edit_box(response, id):
-    box = Box.objects.get(id=id)  # pylint: disable=no-member
+def edit_box(response, slug):
+    box = Box.objects.get(slug=slug)  # pylint: disable=no-member
     if response.method == "POST":
         form = BoxForm(response.POST, response.FILES, instance=box)
         if form.is_valid():
@@ -66,16 +68,16 @@ def edit_box(response, id):
 
 
 @login_required
-def delete_box(response, id):
-    box = Box.objects.get(id=id)  # pylint: disable=no-member
+def delete_box(response, slug):
+    box = Box.objects.get(slug=slug)  # pylint: disable=no-member
     box.delete()
     # messages.success(response, "Box has been deleted")
     return HttpResponseRedirect(reverse("boxes"))
 
 
 @login_required
-def comics(response, id):
-    box = Box.objects.get(id=id)  # pylint: disable=no-member
+def comics(response, slug):
+    box = Box.objects.get(slug=slug)  # pylint: disable=no-member
     comics = box.comics.all()
     all_comics = []
     for comic in comics:
@@ -86,6 +88,7 @@ def comics(response, id):
                     "publisher": comic.publisher,
                     "id": comic.id,
                     "name": comic.name,
+                    "slug": comic.slug,
                     "number": comic.number,
                     "variant": comic.variant,
                     "condition": comic.condition,
@@ -97,12 +100,12 @@ def comics(response, id):
 
 
 @login_required
-def new_comic(response, id):
+def new_comic(response, slug):
+    box = Box.objects.get(slug=slug)  # pylint: disable=no-member
     if response.method == "POST":
-        form = ComicForm(response.POST, response.FILES, initial={"box": id})
+        form = ComicForm(response.POST, response.FILES)
 
         if form.is_valid():
-            b = form.cleaned_data["box"]
             p = form.cleaned_data["publisher"]
             n = form.cleaned_data["name"]
             num = form.cleaned_data["number"]
@@ -113,7 +116,7 @@ def new_comic(response, id):
             m = form.cleaned_data["sImg"]
 
             response.user.comic_set.create(
-                box=b,
+                box=box,
                 publisher=p,
                 name=n,
                 variant=v,
@@ -123,20 +126,19 @@ def new_comic(response, id):
                 owned=o,
                 sImg=m,
             )
-            return HttpResponseRedirect("/comics/%s" % int(b.pk))
+            return HttpResponseRedirect("/boxes/%s" % box.slug)
         else:
             return render(response, "main/404.html", {})
     else:
 
-        url = response.get_raw_uri()
-        box_id = int(url.split("/")[4])
-        form = ComicForm(initial={"box": box_id})
+        form = ComicForm(initial={"box": box.id})
         form.fields["box"].widget = HiddenInput()
         return render(response, "main/newcomic.html", {"form": form})
 
 
-def edit_comic(response, id):
-    comic = Comic.objects.get(id=id)  # pylint: disable=no-member
+def edit_comic(response, slug, comic_slug):
+    box = Box.objects.get(slug=slug)  # pylint: disable=no-member
+    comic = Comic.objects.get(slug=comic_slug)  # pylint: disable=no-member
 
     if response.method == "POST":
         form = ComicForm(response.POST, response.FILES, instance=comic)
@@ -162,18 +164,20 @@ def edit_comic(response, id):
             comic.owned = o
             comic.sImg = m
             comic.save()
-            return HttpResponseRedirect("/comics/%s" % int(b.pk))
+            return HttpResponseRedirect("/boxes/%s/" % box.slug)
 
     else:
         form = ComicForm(instance=comic)
 
-    return render(response, "main/editcomic.html", {"form": form, "comic": comic})
+    return render(
+        response, "main/editcomic.html", {"form": form, "box": box, "comic": comic}
+    )
 
 
 @login_required
-def delete_comic(response, id):
-    comic = Comic.objects.get(id=id)  # pylint: disable=no-member
+def delete_comic(response, slug, comic_slug):
+    comic = Comic.objects.get(slug=comic_slug)  # pylint: disable=no-member
     b = comic.box
     comic.delete()
     # messages.success(response, "Box has been deleted")
-    return HttpResponseRedirect("/comics/%s" % int(b.pk))
+    return HttpResponseRedirect("/boxes/%s/" % box.slug)
