@@ -177,7 +177,7 @@ def edit_comic(response, slug, comic_slug):
 @login_required
 def delete_comic(response, slug, comic_slug):
     comic = Comic.objects.get(slug=comic_slug)  # pylint: disable=no-member
-    b = comic.box
+    box = comic.box
     comic.delete()
     # messages.success(response, "Box has been deleted")
     return HttpResponseRedirect("/boxes/%s/" % box.slug)
