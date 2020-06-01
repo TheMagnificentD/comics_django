@@ -6,7 +6,7 @@
 
 {% block content%}
 <h2>{{box.name}}</h2>
-<p><a href="/box/{{box.id}}/newcomic"><img src="{%static 'img/Plus.png'%}" width="50" height="50" </a></p></a>
+<p><a href="/boxes/{{box.slug}}/new-comic"><img src="{%static 'img/Plus.png'%}" width="50" height="50" </a></p></a>
 {% for comic in comics %}
 
 <table>
@@ -37,7 +37,8 @@
                         <p>{{comic.owned}}</p>
                 </td>
                 <td>
-                        <a href="/editcomic/{{comic.id}}">edit</a> | <a href="/deletecomic/{{comic.id}}">delete</a>
+                        <a href="/boxes/{{box.slug}}/{{comic.slug}}/edit-comic">edit</a> | <a
+                                href="/boxes/{{box.slug}}/{{comic.slug}}/delete-comic">delete</a>
                 </td>
         </tr>
 </table>

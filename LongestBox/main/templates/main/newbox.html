@@ -4,11 +4,11 @@
 
 {% block content %}
 <h3>Create a new box</h3>
-<form method="POST" action="/newbox/" enctype="multipart/form-data" >
+<form method="POST" action="/boxes/new-box/" enctype="multipart/form-data">
         {% csrf_token %}
         {{form.as_p}}
         <button type="submit" name="save" class="btn btn-success">Create New Box</button>
-        
+
 </form>
 <br>
 <a href="/boxes/" class="btn btn-warning">Back</a>
