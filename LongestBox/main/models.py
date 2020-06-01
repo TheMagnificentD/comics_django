@@ -114,23 +114,25 @@ class Comic(models.Model):
 
 def create_box_slug(instance, new_slug=None):
     slug = slugify(instance.name)
-    try:
-        box = Box.objects.get(slug=slug)  # pylint: disable=no-member
-        if box:
-            slug = "%s-%s" % (slug, uuid.uuid4().hex[:8])
-    except:
-        pass
+    if new_slug is not None:
+        slug = new_slug
+    query_set = Box.objects.filter(slug=slug)
+    exists = query_set.exists()
+    if exists:
+        new_slug = "%s-%s" % (slug, uuid.uuid4().hex[:10])
+        return create_box_slug(instance, new_slug=new_slug)
     return slug
 
 
-def create_comic_slug(instance):
+def create_comic_slug(instance, new_slug=None):
     slug = slugify(instance.name)
-    try:
-        comic = Comic.objects.get(slug=slug)  # pylint: disable=no-member
-        if comic:
-            slug = "%s-%s" % (slug, uuid.uuid4().hex[:25])
-    except:
-        pass
+    if new_slug is not None:
+        slug = new_slug
+    query_set = Comic.objects.filter(slug=slug)
+    exists = query_set.exists()
+    if exists:
+        new_slug = "%s-%s" % (slug, uuid.uuid4().hex[:10])
+        return create_comic_slug(instance, new_slug=new_slug)
     return slug
 
 
@@ -140,6 +142,7 @@ def pre_save_receiver_box(sender, instance, *args, **kwargs):
         instance.slug = create_box_slug(instance)
 
 
+# The presave will always be called before the save
 def pre_save_receiver_comic(sender, instance, *args, **kwargs):
     if not instance.slug:
         instance.slug = create_comic_slug(instance)
