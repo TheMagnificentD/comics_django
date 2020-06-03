@@ -13,11 +13,13 @@ from django.urls import reverse
 
 
 def home(response):
+
     return render(response, "main/home.html", {})
 
 
 @login_required
 def boxes(response):
+
     boxes = Box.objects.all()  # pylint: disable=no-member
     all_boxes = []
     for box in boxes:
@@ -31,6 +33,7 @@ def boxes(response):
 
 @login_required
 def new_box(response):
+
     if response.method == "POST":
         form = BoxForm(response.POST, response.FILES)
 
@@ -50,7 +53,9 @@ def new_box(response):
 
 @login_required
 def edit_box(response, slug):
+
     box = Box.objects.get(slug=slug)  # pylint: disable=no-member
+    box.slug = None
     if response.method == "POST":
         form = BoxForm(response.POST, response.FILES, instance=box)
         if form.is_valid():
@@ -69,6 +74,7 @@ def edit_box(response, slug):
 
 @login_required
 def delete_box(response, slug):
+
     box = Box.objects.get(slug=slug)  # pylint: disable=no-member
     box.delete()
     # messages.success(response, "Box has been deleted")
@@ -77,6 +83,7 @@ def delete_box(response, slug):
 
 @login_required
 def comics(response, slug):
+
     box = Box.objects.get(slug=slug)  # pylint: disable=no-member
     comics = box.comics.all()
     all_comics = []
@@ -101,7 +108,9 @@ def comics(response, slug):
 
 @login_required
 def new_comic(response, slug):
+
     box = Box.objects.get(slug=slug)  # pylint: disable=no-member
+
     if response.method == "POST":
         form = ComicForm(response.POST, response.FILES)
 
@@ -139,6 +148,7 @@ def new_comic(response, slug):
 def edit_comic(response, slug, comic_slug):
     box = Box.objects.get(slug=slug)  # pylint: disable=no-member
     comic = Comic.objects.get(slug=comic_slug)  # pylint: disable=no-member
+    comic.slug = None
 
     if response.method == "POST":
         form = ComicForm(response.POST, response.FILES, instance=comic)

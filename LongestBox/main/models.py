@@ -44,10 +44,11 @@ class Comic(models.Model):
 
 
 def create_box_slug(instance, new_slug=None):
+
     slug = slugify(instance.name)
     if new_slug is not None:
         slug = new_slug
-    query_set = Box.objects.filter(slug=slug)
+    query_set = Box.objects.filter(slug=slug)  # pylint: disable=no-member
     exists = query_set.exists()
     if exists:
         new_slug = "%s-%s" % (slug, uuid.uuid4().hex[:10])
@@ -56,10 +57,11 @@ def create_box_slug(instance, new_slug=None):
 
 
 def create_comic_slug(instance, new_slug=None):
+
     slug = slugify(instance.name)
     if new_slug is not None:
         slug = new_slug
-    query_set = Comic.objects.filter(slug=slug)
+    query_set = Comic.objects.filter(slug=slug)  # pylint: disable=no-member
     exists = query_set.exists()
     if exists:
         new_slug = "%s-%s" % (slug, uuid.uuid4().hex[:10])
