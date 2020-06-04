@@ -20,15 +20,9 @@ def home(response):
 @login_required
 def boxes(response):
 
-    boxes = Box.objects.all()  # pylint: disable=no-member
-    all_boxes = []
-    for box in boxes:
-        if box.user_id == response.user.pk:
-            all_boxes.append(
-                {"id": box.id, "name": box.name, "slug": box.slug, "image": box.sImg}
-            )
+    boxes = Box.objects.filter(user=response.user.pk)  # pylint: disable=no-member
 
-    return render(response, "main/boxes.html", {"boxes": all_boxes})
+    return render(response, "main/boxes.html", {"boxes": boxes})
 
 
 @login_required
@@ -85,25 +79,9 @@ def delete_box(response, slug):
 def comics(response, slug):
 
     box = Box.objects.get(slug=slug)  # pylint: disable=no-member
-    comics = box.comics.all()
-    all_comics = []
-    for comic in comics:
-        if comic.user_id == response.user.pk:
-            all_comics.append(
-                {
-                    "image": comic.sImg,
-                    "publisher": comic.publisher,
-                    "id": comic.id,
-                    "name": comic.name,
-                    "slug": comic.slug,
-                    "number": comic.number,
-                    "variant": comic.variant,
-                    "condition": comic.condition,
-                    "date": comic.date,
-                    "owned": comic.owned,
-                }
-            )
-    return render(response, "main/comics.html", {"comics": all_comics, "box": box})
+    comics = box.comics.filter(user=response.user.pk)
+
+    return render(response, "main/comics.html", {"comics": comics, "box": box})
 
 
 @login_required
@@ -178,6 +156,8 @@ def edit_comic(response, slug, comic_slug):
 
     else:
         form = ComicForm(instance=comic)
+        # This adjusts the queryset of the form= default=all() and now its filtered on user
+        form.fields["box"].queryset = Box.objects.filter(user=response.user.pk)
 
     return render(
         response, "main/editcomic.html", {"form": form, "box": box, "comic": comic}
