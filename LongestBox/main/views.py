@@ -39,7 +39,6 @@ def new_box(response):
             return HttpResponseRedirect(reverse("boxes"))
 
     else:
-        print("Its not Valid")
         form = BoxForm()
 
     return render(response, "main/newbox.html", {"form": form})
@@ -48,7 +47,8 @@ def new_box(response):
 @login_required
 def edit_box(response, slug):
 
-    box = Box.objects.get(slug=slug)  # pylint: disable=no-member
+    box = get_object_or_404(Box, slug=slug)
+    # box = Box.objects.get(slug=slug)  # pylint: disable=no-member
     box.slug = None
     if response.method == "POST":
         form = BoxForm(response.POST, response.FILES, instance=box)
@@ -69,7 +69,8 @@ def edit_box(response, slug):
 @login_required
 def delete_box(response, slug):
 
-    box = Box.objects.get(slug=slug)  # pylint: disable=no-member
+    box = get_object_or_404(Box, slug=slug)
+    # box = Box.objects.get(slug=slug)  # pylint: disable=no-member
     box.delete()
     # messages.success(response, "Box has been deleted")
     return HttpResponseRedirect(reverse("boxes"))
@@ -78,7 +79,8 @@ def delete_box(response, slug):
 @login_required
 def comics(response, slug):
 
-    box = Box.objects.get(slug=slug)  # pylint: disable=no-member
+    box = get_object_or_404(Box, slug=slug)
+    # box = Box.objects.get(slug=slug)  # pylint: disable=no-member
     comics = box.comics.filter(user=response.user.pk)
 
     return render(response, "main/comics.html", {"comics": comics, "box": box})
@@ -87,7 +89,8 @@ def comics(response, slug):
 @login_required
 def new_comic(response, slug):
 
-    box = Box.objects.get(slug=slug)  # pylint: disable=no-member
+    box = get_object_or_404(Box, slug=slug)
+    # box = Box.objects.get(slug=slug)  # pylint: disable=no-member
 
     if response.method == "POST":
         form = ComicForm(response.POST, response.FILES)
@@ -124,8 +127,10 @@ def new_comic(response, slug):
 
 
 def edit_comic(response, slug, comic_slug):
-    box = Box.objects.get(slug=slug)  # pylint: disable=no-member
-    comic = Comic.objects.get(slug=comic_slug)  # pylint: disable=no-member
+    box = get_object_or_404(Box, slug=slug)
+    # box = Box.objects.get(slug=slug)  # pylint: disable=no-member
+    comic = get_object_or_404(Comic, slug=comic_slug)
+    # comic = Comic.objects.get(slug=comic_slug)  # pylint: disable=no-member
     comic.slug = None
 
     if response.method == "POST":
@@ -166,7 +171,8 @@ def edit_comic(response, slug, comic_slug):
 
 @login_required
 def delete_comic(response, slug, comic_slug):
-    comic = Comic.objects.get(slug=comic_slug)  # pylint: disable=no-member
+    comic = get_object_or_404(Comic, slug=comic_slug)
+    # comic = Comic.objects.get(slug=comic_slug)  # pylint: disable=no-member
     box = comic.box
     comic.delete()
     # messages.success(response, "Box has been deleted")

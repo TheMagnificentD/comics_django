@@ -16,7 +16,7 @@ class Box(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name  # pylint: disable=no-member
+        return self.name
 
     # This Meta class will remove the automatic pluralisation in the admin page, it adds an 'S' so it said boxs.
     # Now it will say Boxes.
@@ -41,6 +41,9 @@ class Comic(models.Model):
     variant = models.CharField("Variant", max_length=5)
     owned = models.BooleanField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
 
 
 def create_box_slug(instance, new_slug=None):
