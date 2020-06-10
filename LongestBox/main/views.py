@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.forms import HiddenInput
 from django.http import HttpResponse
 from .models import Box, Comic
@@ -19,8 +19,7 @@ def home(response):
 
 @login_required
 def boxes(response):
-
-    boxes = Box.objects.filter(user=response.user.pk)  # pylint: disable=no-member
+    boxes = get_list_or_404(Box, user=response.user.pk)
 
     return render(response, "main/boxes.html", {"boxes": boxes})
 
@@ -48,7 +47,6 @@ def new_box(response):
 def edit_box(response, slug):
 
     box = get_object_or_404(Box, slug=slug)
-    # box = Box.objects.get(slug=slug)  # pylint: disable=no-member
     box.slug = None
     if response.method == "POST":
         form = BoxForm(response.POST, response.FILES, instance=box)
@@ -70,7 +68,6 @@ def edit_box(response, slug):
 def delete_box(response, slug):
 
     box = get_object_or_404(Box, slug=slug)
-    # box = Box.objects.get(slug=slug)  # pylint: disable=no-member
     box.delete()
     # messages.success(response, "Box has been deleted")
     return HttpResponseRedirect(reverse("boxes"))
@@ -80,8 +77,7 @@ def delete_box(response, slug):
 def comics(response, slug):
 
     box = get_object_or_404(Box, slug=slug)
-    # box = Box.objects.get(slug=slug)  # pylint: disable=no-member
-    comics = box.comics.filter(user=response.user.pk)
+    comics = get_list_or_404(Comic, user=response.user.pk)
 
     return render(response, "main/comics.html", {"comics": comics, "box": box})
 
@@ -90,7 +86,6 @@ def comics(response, slug):
 def new_comic(response, slug):
 
     box = get_object_or_404(Box, slug=slug)
-    # box = Box.objects.get(slug=slug)  # pylint: disable=no-member
 
     if response.method == "POST":
         form = ComicForm(response.POST, response.FILES)
@@ -128,9 +123,7 @@ def new_comic(response, slug):
 
 def edit_comic(response, slug, comic_slug):
     box = get_object_or_404(Box, slug=slug)
-    # box = Box.objects.get(slug=slug)  # pylint: disable=no-member
     comic = get_object_or_404(Comic, slug=comic_slug)
-    # comic = Comic.objects.get(slug=comic_slug)  # pylint: disable=no-member
     comic.slug = None
 
     if response.method == "POST":
@@ -172,7 +165,6 @@ def edit_comic(response, slug, comic_slug):
 @login_required
 def delete_comic(response, slug, comic_slug):
     comic = get_object_or_404(Comic, slug=comic_slug)
-    # comic = Comic.objects.get(slug=comic_slug)  # pylint: disable=no-member
     box = comic.box
     comic.delete()
     # messages.success(response, "Box has been deleted")
